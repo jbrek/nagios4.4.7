@@ -1,0 +1,36 @@
+sudo apt update
+sudo apt install unrar
+mkdir /tmp/highcharts4nagios.1.3.1
+cd /tmp/highcharts4nagios.1.3.1/
+wget "https://exchange.nagios.org/components/com_mtree/attachment.php?link_id=4011&cf_id=24" -O highcharts4nagios.1.3.1.rar
+unrar x highcharts4nagios.1.3.1.rar
+echo "Fixing Code"
+ip=$(hostname  -I)
+sed -i "s/88.8.108.207/$ip/g" highcharts.html 
+sed -i "s/88.8.138.138/$ip/g" highcharts.html 
+cd /tmp
+sudo mv /tmp/highcharts4nagios.1.3.1/ /usr/local/highcharts
+##############
+#apache2 conf 
+##############
+echo "Creating /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo Alias /highcharts \\\"/usr/local/highcharts\\\" > /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo \<Directory \\\"/usr/local/highcharts\>\\\" >> /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo '    Options None' >> /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo '    AllowOverride None' >> /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo '    Order allow,deny' >> /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo '    Allow from all' >> /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo '    Require all granted' >> /etc/apache2/sites-enabled/highcharts.conf"
+sudo sh -c "echo \</Directory\> >> /etc/apache2/sites-enabled/highcharts.conf"
+
+#Nagios Config
+sudo sh -c "sed -i 's/use                             service-pnp/use                             service-pnp,service-highchart/g' /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo '' >> /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo 'define service {' >> /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo '   name       service-highchart' >> /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo '   action_url /pnp4nagios/index.php/graph?host=\$HOSTNAME\$&srv=\$SERVICEDESC\$ class=tips rel=/pnp4nagios/popup?host=\$HOSTNAME$&srv=\$SERVICEDESC$' >> /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo '   notes_url /highcharts/highcharts.html?host=\$HOSTNAME\$&srv=\$SERVICEDESC\$' >> /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo '   register   0' >> /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo '}' >> /usr/local/nagios/etc/objects/templates.cfg"
+sudo sh -c "echo '' >> /usr/local/nagios/etc/objects/templates.cfg"
+
