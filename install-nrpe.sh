@@ -1,3 +1,4 @@
+#!/bin/bash
 sudo apt-get update
 sudo apt-get install -y autoconf automake gcc libc6 libmcrypt-dev make libssl-dev wget openssl
 
@@ -11,7 +12,7 @@ sudo make all
 
 #sudo make install-groups-users
 #sudo make install
-#sudo make install-config
+sudo make install-config
 sudo sh -c "echo >> /etc/services"
 sudo sh -c "sudo echo '# Nagios services' >> /etc/services"
 sudo sh -c "sudo echo 'nrpe    5666/tcp' >> /etc/services"
