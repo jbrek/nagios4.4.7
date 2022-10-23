@@ -1,4 +1,6 @@
-./install-nagios.sh
-./install-nrpe.sh
-./install-pnp4nagios.sh
-./install-highchart.sh
+#!/bin/bash
+bash ./install-nagios.sh
+bash ./install-nrpe.sh
+bash ./install-pnp4nagios.sh
+bash ./install-highchart.sh
+
