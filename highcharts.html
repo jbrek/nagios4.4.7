@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+                      <html>
+                      <head>
+                      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		      <meta http-equiv="expires" content="0">
+<title>Highcharts for Nagios</title>
+        <script src="./js/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <script src="./js/highcharts.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="./src/css/jscal2.css" />
+        <link rel="stylesheet" type="text/css" href="./src/css/border-radius.css" />
+  <! ################# Calendar Theme: ###################   matrix win2k gold steel>
+        <link rel="stylesheet" type="text/css" href="./src/css/steel/steel.css" />
+        <script type="text/javascript" src="./src/js/jscal2.js"></script>
+  <! ################# Calendar LANG: ###################   ca cn cz de en es fr hr it jp nl pl pt ro ru sk svs>
+        <script type="text/javascript" src="./src/js/lang/en.js"></script>
+  <! ################# Highchart Theme: ###################   dark-blue dark-green gray grid skies>
+        <script type="text/javascript" src="./js/themes/gray.js"></script>
+        <script type="text/javascript" src="./js/modules/exporting.js"></script>
+        <p align=center> 
+	<font color="#e3e3e3">
+        Start:
+        <input id="calendar-inputField-start" size="16" /><img src=./gfx/view-calendar.png id="calendar-trigger-start" align="top">
+        End: 
+        <input id="calendar-inputField-end" size="16"/><img src=./gfx/view-calendar.png id="calendar-trigger-end" align="top">
+        <input type="submit" onClick="javascript:window.location.href=urlx+'&start='+document.getElementById('calendar-inputField-start').value+'&end='+document.getElementById('calendar-inputField-end').value" value="Submit" align="top">
+        <input type="button" onClick="javascript:window.location.href=urlx" value="Reload" align="top">
+        <input type="button" value="?"  id="submsg"></font></p>
+
+<script type="text/javascript">
+
+    /*  Highcharts for nagios Ver 1.3.1 -- 2014.04.10
+	       Created By  Shao Pin, Cheng            */
+
+//#### You may change  LocHost='Your pnp4nagios IP' (Optional, Not necessary !)
+//#### If client in different Domain, you need edit pnp4nagios/share/application/controllers/xport.php add bellow line
+//     header("Access-Control-Allow-Origin: *");  //Allowed *(your IP) Access-Control-Allow-Origin
+    var LocHost=String(window.document.location.host);
+    if (LocHost="192.168.1.115") {LocHost="192.168.1.115"}; // highcharts-IP & pnp4nagios-IP 
+
+    //Calander show up	
+    var cal = Calendar.setup({
+        onSelect: function(cal) { cal.hide() },
+        showTime: true
+    });
+    cal.manageFields("calendar-trigger-start", "calendar-inputField-start", "%Y-%m-%d %I:%M %p");
+    cal.manageFields("calendar-trigger-end", "calendar-inputField-end", "%Y-%m-%d %I:%M %p");
+
+    var LocString=String(window.document.location.href);
+    function GetQueryString(str){
+    var rs=new RegExp("(^|)"+str+"=([^\&]*)(\&|$)","gi").exec(LocString),tmp;
+    if(tmp=rs)return tmp[2];
+    return "";
+    }
+
+    function formatFloat(src, pos)
+    {
+        return Math.round(src*Math.pow(10, pos))/Math.pow(10, pos);
+    }
+
+    $(document).ready(function() {
+  //Get time zone    
+	var Ddate = new Date();
+	var nDate = Ddate.getTimezoneOffset();
+	//Get title name
+        var pictitle =  GetQueryString("host")+" / "+GetQueryString("srv");
+	pictitle = pictitle.replace(/\%20/gi," ");
+
+	//Create 50 line data array
+	for (var inum = 3; inum < 153; inum=inum+3) {
+	   eval('var d'+inum+' = []'); 
+	}
+
+	PiStr = "";
+	var Pilength = 0;
+        var Pi = [];
+        var options = {
+                chart: {
+                    renderTo: 'container',
+                    type: 'area',
+		    zoomType: 'x'
+                },
+                title: {
+                    text: pictitle
+                },
+		subtitle: {
+                //text: 'Click and drag mouse to zoom</a> <br> Click legend to Show/Hide different data series'
+
+                },
+                xAxis: {
+		    type: 'datetime',
+                    title: {
+                        text: ''
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: '' 
+                    }
+                },
+		tooltip: {
+                    shared: true
+                },
+
+                series: [
+                ],
+
+		/* legend: {
+                 layout: 'vertical',
+                 align: 'left',
+                 verticalAlign: 'top',
+                 x: 150,
+                 y: 100,
+                 floating: true,
+                 borderWidth: 1,
+                 backgroundColor: '#FFFFFF'
+                }, */
+		plotOptions: {
+                    area: {
+                    	/*fillColor: {
+                    	    linearGradient: [0, 0, 0, 750],
+                            stops: [
+                                [0, 'rgb(69, 114, 167)'],
+                                [1, 'rgba(2,0,0,0)']
+                            ]
+                        },*/
+                        marker: {
+                            enabled: false,
+                            fillOpacity: .2, 
+                            symbol: 'circle',
+                            radius: 1,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                }
+                //exporting: {
+                //    buttons: {
+                //       exportButton: {
+                //         symbolFill: '#55BE3B'
+                //       },
+                //       printButton: {
+                //         symbolFill: '#7797BE'
+                //       },
+                //    },
+		//    url: '/highcharts/exporting-server/',
+                //}
+        };
+	    var url = "http://"+LocHost+"/pnp4nagios/xport/csv?host="+GetQueryString("host")+"&srv="+GetQueryString("srv")+"&start="+GetQueryString("start")+"&end="+GetQueryString("end")+"&view="+GetQueryString("view");
+	    urlx = window.location.pathname+"?host="+GetQueryString("host")+"&srv="+GetQueryString("srv");
+        var jqxhr = $.get(url, function(data) {
+            var lines = data.split('\n');
+            $.each(lines, function(lineNo, line) {
+                var items = line.split(';');
+                if (lineNo == 0) {
+		    $.each(items, function(itemNo, item) {
+		       Pi.push(item);
+	 	       Pilength = Pi.length;
+		    });
+                } 
+	        else {
+		  for (inum = 3; inum < Pilength; inum=inum+3) {
+                     //eval('d'+inum+'.push([items[0]*1000-nDate*60*1000,parseFloat(items['+inum+'])])');
+                     eval('d'+inum+'.push([items[0]*1000-nDate*60*1000,formatFloat(items['+inum+'],2)])');
+                  }    
+                }
+            })
+		
+	    for (inum = 3; inum < Pilength; inum=inum+3) {
+  	        var series = {
+                   data: []
+                };
+		eval('PiStr = Pi['+inum+']');
+		PiStr = PiStr.replace(/\_AVERAGE$/gi,"");
+		series.name = PiStr;
+                eval('series.data = d'+inum);
+		eval('d'+inum+'.pop()');
+	        options.series.push(series);
+  	    }
+
+	    //Button Option
+	    var showMsg= false,
+	        $button1 = $('#submsg');
+	    $button1.click(function() {
+		if (!showMsg) {
+chart.showLoading('<font color="black" size=4>Highcharts For Nagios v1.3<br><br>* Tips *<br><br>* Click and drag mouse to Zoom. <br>* Click legend to Show/Hide different data series.<br>* Timeranges and more <a href="http://cjt74392.blogspot.tw/2012/10/nagios-hicharts-timeranges.html" target=_blank>Documentation</a><br><br></font>');
+                } else {
+                    chart.hideLoading();
+                } 
+            showMsg= !showMsg;	
+	    });
+		
+	    //***** Create Chart *****
+            var chart = new Highcharts.Chart(options);
+        });
+
+    });
+
+</script>
+   </head>
+   <body>
+    <style>
+      body {background-color: #2b2b2b;}
+    </style>
+        <div id="container" style="width: 1200px; height: 600px; margin: 0 auto"></div>
+
+        <div id="check-update" style="width: 1200px; margin: 0 auto">
+	<a href="http://exchange.nagios.org/directory/Addons/Graphing-and-Trending/Highcharts-for-Nagios/details" target=_blank><img src="./gfx/check.png" height="22" width="129" align=right border=0/></a>
+        </div>
+   </body>
+</html>
