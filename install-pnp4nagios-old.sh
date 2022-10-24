@@ -90,7 +90,7 @@ sudo sh -c "echo '' >> /usr/local/nagios/etc/objects/templates.cfg"
 sudo sh -c "sed -i '/name.*generic-host/a\        use                             host-pnp' /usr/local/nagios/etc/objects/templates.cfg"
 sudo sh -c "sed -i '/name.*generic-service/a\        use                             service-pnp' /usr/local/nagios/etc/objects/templates.cfg"
 
-sudo rm -f /usr/local/pnp4nagios/share/install.php
+#sudo rm -f /usr/local/pnp4nagios/share/install.php
 
 echo "Fixing PNP4 code  should use sed" | tee -a ~/log.txt
 sudo wget -O /usr/local/pnp4nagios/lib/kohana/system/libraries/Input.php https://raw.githubusercontent.com/jbrek/nagios4.4.7/main/Input.php

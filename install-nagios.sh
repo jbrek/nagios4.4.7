@@ -1,12 +1,15 @@
 #!/bin/bash
-#ubuntu 22 fix for apt restart service  screen https://askubuntu.com/questions/1367139/apt-get-upgrade-auto-restart-services
+#ubuntu 22 fix for apt res/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg tart service  screen https://askubuntu.com/questions/1367139/apt-get-upgrade-auto-restart-services
 SECONDS=0
 
 echo "install apt-get" | tee -a ~/log.txt
 sudo sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' /etc/needrestart/needrestart.conf
+#adding php7.4 repo
+sudo yes | LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+sudo apt-get update
 sudo apt-get update
 sudo apt-get install -y software-properties-common ca-certificates lsb-release apt-transport-https autoconf gcc libc6 make wget unzip apache2 php7.4 libapache2-mod-php7.4 libgd-dev openssl libssl-dev autoconf gcc libc6 libmcrypt-dev make libssl-dev wget bc gawk dc build-essential snmp libnet-snmp-perl gettext
-
+echo "apt install finished. Elapsed Time (using \$SECONDS): $SECONDS seconds" | tee -a ~/log.txt
 echo "downloading nagioscore.tar.gz" | tee -a ~/log.txt
 cd /tmp
 i=1
@@ -15,7 +18,7 @@ do
 wget -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/releases/download/nagios-4.4.7/nagios-4.4.7.tar.gz
 #need a check to see if unable to extract
 if [ $? = 0 ]; then
-echo "succesfully download nagioscore.tar.gz" | tee -a ~/log.txt
+echo "succesfully download nagioscore.tar.gz. Elapsed Time (using \$SECONDS): $SECONDS seconds" | tee -a ~/log.txt
 i=0
 else
     echo "ERROR Download failed nagioscore.tar.gz" | tee -a ~/log.txt
