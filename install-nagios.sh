@@ -7,8 +7,19 @@ sudo sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/
 #adding php7.4 repo
 sudo yes | LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 sudo apt-get update
+echo "More stuff to make work on ub22"
+sudo apt-get install -y software-properties-common ca-certificates lsb-release apt-transport-https
+#add new repositry to isntall php7
+sudo yes | LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 sudo apt-get update
-sudo apt-get install -y software-properties-common ca-certificates lsb-release apt-transport-https autoconf gcc libc6 make wget unzip apache2 php7.4 libapache2-mod-php7.4 libgd-dev openssl libssl-dev autoconf gcc libc6 libmcrypt-dev make libssl-dev wget bc gawk dc build-essential snmp libnet-snmp-perl gettext
+echo "INSTALL NAGIOS APT"
+sudo apt-get install -y autoconf gcc libc6 make wget unzip apache2 php7.4 libapache2-mod-php7.4 libgd-dev
+echo "INSTALL SSL required 4.4.7"
+sudo apt-get install -y openssl libssl-dev
+echo "INSTALL NAGIOS PLUGINS APT"
+sudo apt-get install -y autoconf gcc libc6 libmcrypt-dev make libssl-dev wget bc gawk dc build-essential snmp libnet-snmp-perl gettext
+echo "INSTALL PNP4NAGIOS"
+sudo apt-get install -y rrdtool librrds-perl php7.4-gd php7.4-xml rdtool    
 echo "apt install finished. Elapsed Time (using \$SECONDS): $SECONDS seconds" | tee -a ~/log.txt
 echo "downloading nagioscore.tar.gz" | tee -a ~/log.txt
 cd /tmp
