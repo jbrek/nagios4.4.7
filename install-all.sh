@@ -12,4 +12,6 @@ sudo systemctl restart npcd.service
 sudo systemctl restart apache2.service
 sudo systemctl restart nagios.service
 
+sudo /usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+
 echo "Elapsed Time (using \$SECONDS): $SECONDS seconds"
