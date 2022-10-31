@@ -1,10 +1,10 @@
 #installing PNP4Nagios Graphing
 SECONDS=0
-udo apt-get update
+
 echo "More stuff to make work on ub22"
+sudo yes | LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 sudo apt-get install -y software-properties-common ca-certificates lsb-release apt-transport-https
 #add new repositry to isntall php7
-sudo yes | LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 sudo apt-get update
 echo "INSTALL NAGIOS APT"
 sudo apt-get install -y autoconf gcc libc6 make wget unzip apache2 php7.4 libapache2-mod-php7.4 libgd-dev
@@ -81,8 +81,8 @@ sudo sh -c "sed -i '/name.*generic-service/a\        use                        
 
 sudo rm -f /usr/local/pnp4nagios/share/install.php
 echo "Fixing PNP4 code"
-sudo wget -O /usr/local/pnp4nagios/lib/kohana/system/libraries/Input.php https://raw.githubusercontent.com/jbrek/nagios4.4.7/main/Input.php
-sudo wget -O /usr/local/pnp4nagios/share/application/models/data.php https://raw.githubusercontent.com/jbrek/nagios4.4.7/main/data.php
+sudo wget -O /usr/local/pnp4nagios/lib/kohana/system/libraries/Input.php https://raw.githubusercontent.com/jbrek/nagios4.4.7/master/Input.php
+sudo wget -O /usr/local/pnp4nagios/share/application/models/data.php https://raw.githubusercontent.com/jbrek/nagios4.4.7/master/data.php
 
 echo "log file at /tmp/install-pnp4nagios.log" | tee -a ~/log.txt
 echo "Elapsed Time (using \$SECONDS): $SECONDS seconds" | tee -a ~/log.txt
